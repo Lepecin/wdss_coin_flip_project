@@ -300,8 +300,8 @@ server<-function(input,output){
    })
   output$datatable<-renderTable({
     if(
-      (nchar(input$coinstring)==as.numeric(input$stringlength))|
-      (as.numeric(input$coinprob)!=0)|
+      (nchar(input$coinstring)==as.numeric(input$stringlength))&
+      (as.numeric(input$coinprob)!=0)&
       (as.numeric(input$coinprob)!=1)
       ){
     pcalc()
@@ -309,8 +309,8 @@ server<-function(input,output){
   })
   output$KSplot<-renderPlot({
     if(
-      (nchar(input$coinstring)==as.numeric(input$stringlength))|
-      (as.numeric(input$coinprob)!=0)|
+      (nchar(input$coinstring)==as.numeric(input$stringlength))&
+      (as.numeric(input$coinprob)!=0)&
       (as.numeric(input$coinprob)!=1)
     ){
       pplot()
