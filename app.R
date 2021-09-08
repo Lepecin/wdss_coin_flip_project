@@ -6,13 +6,27 @@ ui<-fluidPage(
     textInput(inputId = "coinstring","Input Coin Flip Series:"),
     textOutput(outputId = "sampledata"),
     selectInput(inputId = "stringlength","Input Series Length:",c(32,64)),
-    sliderInput(inputId = "coinprob","Input Coin Bias:",0,1,0.5,step=FALSE,round=FALSE),
+    sliderInput(inputId = "coinprob","Input Coin Bias:",0,1,0.5,step=NULL,round=FALSE),
     textOutput(outputId = "warning"),
     actionButton(inputId = "comp","Compute p-values")
   ),
   mainPanel(
-    tableOutput(outputId = "datatable"),
-    plotOutput(outputId = "KSplot")
+    tabsetPanel(
+      tabPanel("Main Screen",
+        tableOutput(outputId = "datatable"),
+        plotOutput(outputId = "KSplot")
+        ),
+      {tabPanel("User Manual",
+        textOutput(outputId = "instruc1"),
+        textOutput(outputId = "instruc2"),
+        textOutput(outputId = "instruc3"),
+        textOutput(outputId = "instruc4"),
+        textOutput(outputId = "instruc5"),
+        textOutput(outputId = "instruc6"),
+        textOutput(outputId = "instruc7"),
+        textOutput(outputId = "instruc8")
+      )}
+    )
   )
 )
 
@@ -331,7 +345,31 @@ server<-function(input,output){
       pplot()
     }
   })
-  
+  {
+  output$instruc1<-renderText({
+    "This app measures the user’s ability to simulate a believable series of coin flips."
+  })
+  output$instruc2<-renderText({
+    "Type a series of ones and zeros into the box saying 'Input Coin Flip Series'."
+  })
+  output$instruc3<-renderText({
+      "The ones and zeros can be interpreted as heads and tails of a hypothetical coin respectively."
+  })
+  output$instruc4<-renderText({
+    "The input series is accepted if its length coincides with the chosen sample size, which can be changed in the box saying 'Input Series Length'."
+  })
+  output$instruc5<-renderText({
+    "Then, choose the hypothesised bias of the coin you simulated such that it lies between zero and one using the 'Input Coin Bias' slider."
+  })
+  output$instruc6<-renderText({
+    "Upon pressing the 'Compute p-values' button, the 'Main Screen' tab will show a table of values and a plot."
+  })
+  output$instruc7<-renderText({
+    "The 'Pvalues' column shows the p-values from each hypothesis test applied to the input series, while the 'Metrics' column shows test values that are not p-values."
+  })
+  output$instruc8<-renderText({
+    "Overall, the closer each p-value is to one an the closer the metric is to zero, the more your input looks like a series of coin flips."
+  })
 }
-
+}
 shinyApp(ui=ui,server=server)
