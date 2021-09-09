@@ -1,9 +1,6 @@
+#Install pracma (user library) and shiny (system library)
 library(pracma)
 library(shiny)
-
-x<-"10101010010001010001010010010100"
-x<-"1111111111111111111111111111111111111111111111111111111111111111"
-nchar(x)
 
 {
 # Function for converting binary strings into
@@ -24,13 +21,14 @@ bitter<-function(x,s){
   return(y)
 }
 
-
 # Function for finding maximum run length of
 # binary sequence
 argmax<-function(x){
   a<-c(x[1],x)
   b<-c(x,x[length(x)])
-  k<-abs(a-b);k[1]<-1;k<-k[c(rep(TRUE,length(k)-1),FALSE)]
+  k<-abs(a-b)
+  k[1]<-1
+  k<-k[c(rep(TRUE,length(k)-1),FALSE)]
   j<-1
   v<-0
   for(i in 1:length(k)){
@@ -225,9 +223,10 @@ pvecgen<-function(x,p){
 uniftest<-function(k){
 v<-seq(1/(length(k)),1,1/(length(k)))
 s<-sort(k)
-return(abs(1-(s%*%v)/(s%*%s)))
+return(2*abs(1-(s%*%v)/(s%*%s)))
 }
 
+# Uniformity test plot
 unifplot<-function(k){
   v<-seq(1/(length(k)),1,1/(length(k)))
   plot(sort(k),v,main="Kolmogorov-Smirnov plot for WH p-vector",xlab="Ordered p-vector"
@@ -236,22 +235,50 @@ unifplot<-function(k){
   abline(a=0,b=(sort(k)%*%v)/(sort(k)%*%sort(k)),col="red")
 }
 
+# Create data table of p-values and test metrics
 pvaldata<-function(y,p){
   d<-data.frame(
     "Tests" = c(
+    "Bernoulli dist. test",
     "Longest run test",
     "General runs test",
     "Walsh-Hadamard test"
     ),
     "Pvalues" = c(
+    berpval(y,p),
     maxrunpval(length(y),p,argmax(y)),
     numrunpval(length(y),p,argrun(y)),
+    NA
+    ),
+    "Metrics" = c(
+    NA,
+    NA,
+    NA,
     uniftest(pvecgen(y,p))
   )
   )
   return(d)
 }
-}
-#Install pracma (user library) and shiny (system library)
-#R shiny code
 
+# P-value generator for
+# Bernoulli test
+berpval<-function(x,p){
+  m<-sum(x)/length(x)
+  return(2*(1-pnorm(abs(m-p)/sqrt(p*(1-p)/length(x)))))
+}
+}
+
+# Autocorrelation test code (abandoned & unused)
+x<-c(sample(c(1,0),64,replace=TRUE))
+autocov<-function(x,n){
+  m<-length(x)
+  a<-x[c(rep(TRUE,m-n),rep(FALSE,n))]
+  b<-x[c(rep(FALSE,n),rep(TRUE,m-n))]
+  return(sum((a-mean(a))*(b-mean(b)))/sqrt(sum((a-mean(a))*(a-mean(a)))*sum((b-mean(b))*(b-mean(b)))))
+}
+k<-numeric(64)
+for(i in 0:63){
+  k[i+1]<-autocov(x,i)
+}
+plot(0:63,k)
+abline(h=mean(k[!k %in% NaN]))
